@@ -33,7 +33,7 @@ jobs:
           poetry run flake8 todo --count --show-source --statistics
       - name: Check isort
         run: |
-          poetry run isort todo/**/*.py --check-only --verbose
+          poetry run isort ./ --check-only --verbose
       - name: Test with pytest
         run: |
           poetry run pytest

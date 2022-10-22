@@ -1,14 +1,14 @@
+import uuid
 from datetime import datetime
 from typing import Optional
-import uuid
 
 
 class Task:
+    """Domain model for Task of TODO_list."""
+
     def __init__(
-            self,
-            description: str,
-            deadline: Optional[datetime],
-            exp_date: datetime):
+        self, description: str, deadline: Optional[datetime], exp_date: datetime
+    ):
         self.id = uuid.uuid4()
         self.description = description
         self.deadline = deadline
@@ -26,7 +26,9 @@ class Task:
         return hash(self.description + str(self.exp_date))
 
     def change_deadline(self, datetime: datetime):
+        """Takes new deadline and rewrites old one."""
         self.deadline = datetime
 
     def change_description(self, new_description: str):
+        """Takes new description and rewrites old one."""
         self.description = new_description
