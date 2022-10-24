@@ -2,28 +2,16 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
+from pydantic import BaseModel, Field
 
-class Task:
+
+class Task(BaseModel):
     """Domain model for Task of TODO_list."""
 
-    def __init__(
-        self, description: str, deadline: Optional[datetime], exp_date: datetime
-    ):
-        self.id = uuid.uuid4()
-        self.description = description
-        self.deadline = deadline
-        self.exp_date = exp_date
-
-    def __repr__(self):
-        return f"Task {self.description} with deadline: {self.deadline}"
-
-    def __eq__(self, other):
-        if not isinstance(other, Task):
-            return False
-        return other.id == self.id
-
-    def __hash__(self):
-        return hash(self.description + str(self.exp_date))
+    description: str = Field(default=...)
+    deadline: Optional[datetime] = Field(default=None)
+    exp_date: datetime = Field(default=None)
+    task_id: uuid.UUID = Field(default=uuid.uuid1())
 
     def change_deadline(self, datetime: datetime):
         """Takes new deadline and rewrites old one."""
