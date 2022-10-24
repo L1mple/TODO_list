@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pytest
-
 from todo.domain.models import Task
 
 
