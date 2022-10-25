@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  web:
+    container_name: "web"
+    image: nginx:alpine
+    depends_on:
+      - app
+    ports:
+      - "8082:81"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
+  app:
+    container_name: app
+    build: ""
+    command: bash -c "uvicorn todo.app.main:app --host 0.0.0.0 --port 800 --reload"
+    volumes:
+      - .:/app
+    restart: always
+    depends_on:
+      - db
+  
+  db:
+    container_name: mongo_db
+    image: mongo
+    ports:
+      - "27017:27017"
+    
