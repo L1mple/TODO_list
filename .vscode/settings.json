@@ -15,5 +15,6 @@
         "cmap",
         "foldl",
         "foldr"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "basic"
 }
