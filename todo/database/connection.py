@@ -1,9 +1,10 @@
 import pymongo
 
-MONGO_URL = "mongodb://localhost:27017"
 
-client = pymongo.MongoClient(MONGO_URL)
+class Database:
+    """init mongodb in class."""
 
-database = client.tasks
-
-tasks_collection = database.get_collection("tasks_collection")
+    def __init__(self, mongo_url: str):
+        self.database = pymongo.MongoClient(mongo_url)
+        self.table = self.database.task
+        self.collection = self.table.task_collection
