@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class TaskDomain(BaseModel):
+class Task(BaseModel):
     """Domain model for Task of TODO_list."""
 
     uid: str

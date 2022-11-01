@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Env File",
+            "type": "python",
+            "request": "launch",
+            "envFile": "${workspaceFolder}/config/debug.env",
+            "program": "${file}"
+        }
+    ]
+}

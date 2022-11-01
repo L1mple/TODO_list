@@ -1,15 +1,12 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, MongoDsn
 
 
 class Settings(BaseSettings):
     """Settings for env files."""
 
-    MONGODB_URL: str
+    MONGODB_URL: MongoDsn
     MONGODB_ADMINPASSWORD: str
     MONGODB_ADMINUSERNAME: str
 
     class Config:
-        """Env file location."""
-
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+        env_file = "config/debug.env"
