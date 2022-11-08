@@ -12,11 +12,13 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
 
   api:
-    container_name: app
+    container_name: api
     build: .
     volumes:
-      - .:/app
+      - .:/api
     restart: always
+    env_file:
+      - config\docker.env
     depends_on:
       - mongo
 
