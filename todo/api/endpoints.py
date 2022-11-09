@@ -32,7 +32,7 @@ async def create_one_task(
         deadline=task_data.deadline,
         exp_date=task_data.exp_date,
     )
-    return await repository.create_one(task_data=task_db)
+    return await repository.create_one(document_data=task_db)
 
 
 @router.get("/task/{task_id}")
@@ -65,7 +65,7 @@ async def create_many_tasks(
             exp_date=task.exp_date,
         )
         tasks_to_create.append(task_to_add.dict(by_alias=True))
-    return await repository.create_many(tasks=tasks_to_create)
+    return await repository.create_many(documents=tasks_to_create)
 
 
 @router.get("/task")
@@ -104,4 +104,4 @@ async def replace_task_in_db(
         deadline=task_data.deadline,
         exp_date=task_data.exp_date,
     )
-    return await repository.replace_one(task=task_to_replace)
+    return await repository.replace_one(document=task_to_replace)

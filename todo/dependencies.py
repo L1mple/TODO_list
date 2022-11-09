@@ -12,5 +12,5 @@ class Container(containers.DeclarativeContainer):
     database_client = providers.Singleton(Database, config.MONGODB_URL)
 
     task_repository = providers.Factory(
-        MongoDbTaskRepository, task_collection=database_client.provided.task_collection
+        MongoDbTaskRepository, some_collection=database_client.provided.task_collection
     )

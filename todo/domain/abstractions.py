@@ -1,18 +1,18 @@
 from abc import ABC, abstractmethod
 
-from todo.domain.models import Task
+from pydantic import BaseModel
 
 
-class AbstractTaskRepository(ABC):
-    """Abstract repository for repository pattern."""
+class AbstractRepository(ABC):
+    """Generic abstract repository."""
 
     @abstractmethod
-    async def create_one(self, task: Task):
+    async def create_one(self, task: BaseModel):
         """Create one method in repository."""
         raise NotImplementedError
 
     @abstractmethod
-    async def create_many(self, tasks: list[Task]):
+    async def create_many(self, tasks: list[BaseModel]):
         """Create many method in repository."""
         raise NotImplementedError
 
@@ -37,6 +37,10 @@ class AbstractTaskRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def replace_one(self, task: Task):
+    async def replace_one(self, task: BaseModel):
         """Patch method in repository."""
         raise NotImplementedError
+
+
+class AbstractTaskRepository(AbstractRepository):
+    """Abstract repository for repository pattern."""
