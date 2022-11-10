@@ -3,6 +3,8 @@ from datetime import datetime
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
+from todo.domain.models import Task
+
 
 class PyObjectId(ObjectId):
     """Class for _id in mongodb."""
@@ -30,6 +32,24 @@ class TaskDb(BaseModel):
     description: str
     deadline: datetime | None = None
     exp_date: datetime | None = None
+
+    def to_entity(self) -> Task:
+        """Convert TaskDb to Task from domain."""
+        return Task(
+            uid=str(self.uid),
+            description=self.description,
+            deadline=self.deadline,
+            exp_date=self.exp_date,
+        )
+
+    def from_entity(self, entity: Task):
+        """Convert Task to TaskDb."""
+        return TaskDb(
+            _id=PyObjectId(ObjectId(entity.uid)),
+            description=entity.description,
+            deadline=entity.deadline,
+            exp_date=entity.exp_date,
+        )
 
     class Config:
         """Config for TaskDb."""

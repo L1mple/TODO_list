@@ -1,12 +1,11 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from .common.models import Entity
 
 
-class Task(BaseModel):
+class Task(Entity[str]):
     """Domain model for Task of TODO_list."""
 
-    uid: str
     description: str
     deadline: datetime | None = None
     exp_date: datetime | None = None
