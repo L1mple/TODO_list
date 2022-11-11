@@ -1,16 +1,34 @@
+"""Module that builds FastAPI application for running Web API.
+
+There we actually configure dependencies, build api and return it so ASGI can run it.
+"""
+
+from dependency_injector import providers
 from fastapi import FastAPI
+from toolz import pipe
 
-from todo.api.endpoints import router
-from todo.config import Settings
 from todo.dependencies import Container
+from todo.service.mongo.task_repository import MongoTaskRepository
+
+from . import common, task
+from .common import dependencies, endpoints, error_handlers, event_handlers, middleware
 
 
-def create_api() -> FastAPI:
-    """Init FastAPI instance."""
-    di_container = Container()
-    di_container.config.from_pydantic(Settings())
-    di_container.wire(modules=["todo.api.endpoints"])
+def bootstrap() -> FastAPI:
+    """Instantiate FastAPI-based Web API."""
+    container = Container(
+        task_repository=providers.Singleton(MongoTaskRepository),
+    )
+    container.wire(packages=[common, task])
 
-    api = FastAPI()
-    api.include_router(router)
-    return api
+    return pipe(
+        container.api_settings().create_app(),
+        # commons
+        dependencies.bootstrap,
+        error_handlers.bootstrap,
+        event_handlers.bootstrap,
+        middleware.bootstrap,
+        # routes
+        endpoints.bootstrap,
+        task.bootstrap,
+    )

@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "docker compose up mongo mongo-express",
+            "type": "docker-compose",
+            "dockerCompose": {
+                "up": {
+                    "services": [
+                        "mongo",
+                        "mongo-express"
+                    ],
+                    "detached": true,
+                    "build": true,
+                },
+                "envFile": "${workspaceFolder}/config/docker.env",
+                "files": [
+                    "${workspaceFolder}/docker-compose.yml"
+                ]
+            }
+        }
+    ]
+}

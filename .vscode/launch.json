@@ -8,12 +8,9 @@
             "module": "uvicorn",
             "envFile": "${workspaceFolder}/config/debug.env",
             "args": [
-                "todo.api.main:create_api",                
-                "--host",
-                "0.0.0.0",
-                "--port",
-                "800",
-                "--factory"               
+                "todo.api.main:bootstrap",
+                "--factory",
+                "--reload"
             ]
         }
     ]

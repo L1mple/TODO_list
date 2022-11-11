@@ -11,10 +11,19 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "cSpell.words": [
+        "ADMINUSERNAME",
+        "camelcase",
+        "caseconverter",
         "cfilter",
         "cmap",
+        "fastapi",
         "foldl",
-        "foldr"
+        "foldr",
+        "INITDB",
+        "pyproject",
+        "PYTHONUNBUFFERED",
+        "uvicorn",
+        "virtualenvs"
     ],
     "python.analysis.typeCheckingMode": "basic"
 }
