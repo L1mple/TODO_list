@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 
-from todo.api.endpoints import router
 from todo.config import Settings
 from todo.dependencies import Container
 
@@ -12,5 +11,4 @@ def create_api() -> FastAPI:
     di_container.wire(modules=["todo.api.endpoints"])
 
     api = FastAPI()
-    api.include_router(router)
     return api
