@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 TUID = TypeVar("TUID")
 
 TaskUID = str
-EntityUID = str
 
 
 class Entity(Generic[TUID], BaseModel):

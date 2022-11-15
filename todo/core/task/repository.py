@@ -1,8 +1,9 @@
-from ..common.repository import AbstractRepository
+from typing import Protocol
+
 from .models import Task, TaskUID, UpdateTask
 
 
-class AbstractTaskRepository(AbstractRepository[TaskUID]):
+class AbstractTaskRepository(Protocol):
     """Abstract repository for repository pattern."""
 
     async def create_one(self, task: Task) -> TaskUID:
@@ -13,7 +14,7 @@ class AbstractTaskRepository(AbstractRepository[TaskUID]):
         """Abstract method in generic repository."""
         raise NotImplementedError
 
-    async def get_many(self, page: int = 0, per_page: int = 10) -> list[Task] | None:
+    async def update_one(self, task: UpdateTask) -> None:
         """Abstract method in generic repository."""
         raise NotImplementedError
 
@@ -21,6 +22,6 @@ class AbstractTaskRepository(AbstractRepository[TaskUID]):
         """Abstract method in generic repository."""
         raise NotImplementedError
 
-    async def update_one(self, task: UpdateTask) -> None:
+    async def get_many(self, page: int = 0, per_page: int = 10) -> list[Task]:
         """Abstract method in generic repository."""
         raise NotImplementedError

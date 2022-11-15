@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from todo.domain.task.models import Task
+from todo.core.task.models import Task
 
 
 @pytest.fixture

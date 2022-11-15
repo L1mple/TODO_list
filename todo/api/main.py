@@ -1,14 +1,32 @@
+from dependency_injector import providers
 from fastapi import FastAPI
+from toolz import pipe
 
-from todo.config import Settings
 from todo.dependencies import Container
+from todo.core.task.services import MongoDbTaskService
+from todo.service.mongo.repositories import MongoTaskRepository
+
+from . import common, task
+from .common import dependencies, endpoints, error_handlers, event_handlers, middleware
+from .task import endpoints as task_endpoints
 
 
 def create_api() -> FastAPI:
-    """Init FastAPI instance."""
-    di_container = Container()
-    di_container.config.from_pydantic(Settings())
-    di_container.wire(modules=["todo.api.endpoints"])
+    """Instantiate FastAPI-based Web API."""
+    container = Container(
+        task_repository=providers.Singleton(MongoTaskRepository),
+        task_service=providers.Singleton(MongoDbTaskService),
+    )
+    container.wire(packages=[common, task])
 
-    api = FastAPI()
-    return api
+    return pipe(
+        container.api_settings().create_app(),
+        # commons
+        dependencies.bootstrap,
+        error_handlers.bootstrap,
+        event_handlers.bootstrap,
+        middleware.bootstrap,
+        # routes
+        endpoints.bootstrap,
+        task_endpoints.bootstrap,
+    )
