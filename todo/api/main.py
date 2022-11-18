@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from toolz import pipe
 
 from todo.dependencies import Container
-from todo.core.task.services import MongoDbTaskService
 from todo.service.mongo.repositories import MongoTaskRepository
 
 from . import common, task
@@ -15,8 +14,8 @@ def create_api() -> FastAPI:
     """Instantiate FastAPI-based Web API."""
     container = Container(
         task_repository=providers.Singleton(MongoTaskRepository),
-        task_service=providers.Singleton(MongoDbTaskService),
     )
+
     container.wire(packages=[common, task])
 
     return pipe(

@@ -8,10 +8,9 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends, FastAPI, Path, Query, status
 from fastapi.responses import JSONResponse, Response
 
-from todo.dependencies import Container
 from todo.core.task.models import Task, TaskUID, UpdateTask
-from todo.core.task.repository import AbstractTaskRepository
 from todo.core.task.services import AbstractTaskService
+from todo.dependencies import Container
 
 from .contracts import TaskJSONResponse
 
@@ -33,12 +32,9 @@ def bootstrap(app: FastAPI) -> FastAPI:
 @inject
 async def post_task(  # noqa
     body: Task = Body(default=..., description="Task Model from domain"),
-    task_repository: AbstractTaskRepository = Depends(  # noqa
-        Provide[Container.task_repository]
-    ),
     task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
 ):
-    uid = await task_service.create_one(body, task_repository)
+    uid = await task_service.create_one(body)
     return Response(
         status_code=status.HTTP_201_CREATED,
         headers={"Location": f"task/{uid}"},
@@ -67,12 +63,9 @@ async def get_tasks(  # noqa
         le=50,
         description="How many query tasks will be fetched",
     ),
-    task_repository: AbstractTaskRepository = Depends(  # noqa
-        Provide[Container.task_repository]
-    ),
     task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
 ):
-    tasks = await task_service.get_many(page, per_page, task_repository)
+    tasks = await task_service.get_many(page, per_page)
     if len(tasks) == 0:
         return JSONResponse(
             content=[],
@@ -94,12 +87,9 @@ async def get_task_uid(  # noqa
     uid: str = Path(
         default=..., regex="^[0-9a-f]{24}$", example="507f191e810c19729de860ea"
     ),
-    task_repository: AbstractTaskRepository = Depends(  # noqa
-        Provide[Container.task_repository]
-    ),
     task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
 ):
-    task = await task_service.get_by_uid(TaskUID(uid), task_repository)
+    task = await task_service.get_by_uid(TaskUID(uid))
     if task is None:
         return JSONResponse(
             content=None,
@@ -121,12 +111,9 @@ async def patch_task_complete_uid(  # noqa
     uid: str = Path(
         default=..., regex="^[0-9a-f]{24}$", example="507f191e810c19729de860ea"
     ),
-    task_repository: AbstractTaskRepository = Depends(  # noqa
-        Provide[Container.task_repository]
-    ),
     task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
 ):
-    updated_uid = await task_service.complete(uid, task_repository)
+    updated_uid = await task_service.complete(uid)
 
     if updated_uid is None:
         return Response(
@@ -155,12 +142,9 @@ async def patch_task(  # noqa
     body: UpdateTask = Body(
         default=..., description="Fields to update in task, required uid field"
     ),
-    task_repository: AbstractTaskRepository = Depends(  # noqa
-        Provide[Container.task_repository]
-    ),
     task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
 ):
-    updated_uid = await task_service.update_one(body, task_repository)
+    updated_uid = await task_service.update_one(body)
 
     if updated_uid is None:
         return Response(
@@ -171,4 +155,33 @@ async def patch_task(  # noqa
     return Response(
         status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
         headers={"Location": f"task/{updated_uid}"},
+    )
+
+
+@router.delete(
+    "/{uid}",
+    description="Delete Task by id.",
+    response_description="Successfully updated task info",
+    responses={
+        204: {"description": "Successfully deleted"},
+        404: {"description": "No task with passed uid found"},
+    },
+)
+@inject
+async def delete_task(
+    uid: str = Path(
+        default=..., regex="^[0-9a-f]{24}$", example="507f191e810c19729de860ea"
+    ),
+    task_service: AbstractTaskService = Depends(
+        Provide[Container.task_service],
+    ),
+):
+    result = await task_service.delete_by_uid(TaskUID(uid))
+    if result is None:
+        return Response(
+            content=None,
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+    return Response(
+        status_code=status.HTTP_204_NO_CONTENT,
     )

@@ -18,7 +18,7 @@ class AbstractTaskRepository(Protocol):
         """Abstract method in generic repository."""
         raise NotImplementedError
 
-    async def delete_one_by_uid(self, uid: TaskUID) -> None:
+    async def delete_one_by_uid(self, uid: TaskUID) -> None | TaskUID:
         """Abstract method in generic repository."""
         raise NotImplementedError
 

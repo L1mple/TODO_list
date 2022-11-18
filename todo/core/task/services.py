@@ -10,7 +10,6 @@ class AbstractTaskService(Protocol):
     async def create_one(
         self,
         new_task: Task,
-        repository: AbstractTaskRepository,
     ) -> TaskUID:
         """Create new task."""
         raise NotImplementedError
@@ -18,7 +17,6 @@ class AbstractTaskService(Protocol):
     async def get_by_uid(
         self,
         task_uid: TaskUID,
-        repository: AbstractTaskRepository,
     ) -> Task | None:
         """Find one Task by it's uid."""
         raise NotImplementedError
@@ -27,7 +25,6 @@ class AbstractTaskService(Protocol):
         self,
         page: int,
         per_page: int,
-        repository: AbstractTaskRepository,
     ) -> list[Task]:
         """Find multiple paginated tasks."""
         raise NotImplementedError
@@ -35,7 +32,6 @@ class AbstractTaskService(Protocol):
     async def complete(
         self,
         task_uid: TaskUID,
-        repository: AbstractTaskRepository,
     ) -> None:
         """Mark task as completed."""
         raise NotImplementedError
@@ -43,56 +39,64 @@ class AbstractTaskService(Protocol):
     async def update_one(
         self,
         update_task: UpdateTask,
-        repository: AbstractTaskRepository,
     ) -> None:
         """Update info about Task."""
         raise NotImplementedError
 
+    async def delete_by_uid(
+        self,
+        task_uid: TaskUID,
+    ) -> None | TaskUID:
+        """Delete all info about Task."""
+        raise NotImplementedError
 
-class MongoDbTaskService(AbstractTaskService):
+
+class DatabaseTaskService(AbstractTaskService):
     """Implementation of AbstractTaskService."""
+
+    def __init__(self, repository: AbstractTaskRepository) -> None:
+        self.repository = repository
 
     async def create_one(
         self,
         new_task: Task,
-        repository: AbstractTaskRepository,
     ) -> TaskUID:
         """Create new task."""
-        return await repository.create_one(new_task)
+        return await self.repository.create_one(new_task)
 
     async def get_by_uid(
         self,
         task_uid: TaskUID,
-        repository: AbstractTaskRepository,
     ) -> Task | None:
         """Find one Task by it's uid."""
-        return await repository.read_one_by_uid(task_uid)
+        return await self.repository.read_one_by_uid(task_uid)
 
     async def get_many(
         self,
         page: int,
         per_page: int,
-        repository: AbstractTaskRepository,
     ) -> list[Task]:
         """Find multiple paginated tasks."""
-        return await repository.get_many(page, per_page)
+        return await self.repository.get_many(page, per_page)
 
-    async def complete(
-        self,
-        task_uid: TaskUID,
-        repository: AbstractTaskRepository,
-    ) -> None:
+    async def complete(self, task_uid: TaskUID) -> None:
         """Mark task as completed."""
         update = UpdateTask(
             uid=task_uid,
             done=True,
         )
-        return await repository.update_one(update)
+        return await self.repository.update_one(update)
 
     async def update_one(
         self,
         update_task: UpdateTask,
-        repository: AbstractTaskRepository,
     ) -> None:
         """Edit info about Task."""
-        return await repository.update_one(update_task)
+        return await self.repository.update_one(update_task)
+
+    async def delete_by_uid(
+        self,
+        task_uid: TaskUID,
+    ) -> None | TaskUID:
+        """Delete all info about Task with this particular uid."""
+        return await self.repository.delete_one_by_uid(task_uid)

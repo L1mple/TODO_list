@@ -34,11 +34,13 @@ class MongoTaskRepository(AbstractTaskRepository):
         await existing_document.set(task.dict(exclude_unset=True, exclude={"uid"}))
         return TaskUID(existing_document.id)
 
-    async def delete_one_by_uid(self, uid: TaskUID) -> None:
+    async def delete_one_by_uid(self, uid: TaskUID) -> None | TaskUID:
         """Delete method in repository."""
-        existing_doc = await TaskMongoDb.get(PydanticObjectId(uid))
-        if existing_doc is not None:
-            await existing_doc.delete()
+        existing_document = await TaskMongoDb.get(document_id=PydanticObjectId(uid))
+        if existing_document is None:
+            return None
+        await existing_document.delete()
+        return TaskUID(existing_document.id)
 
     async def get_many(self, page: int = 0, per_page: int = 10) -> list[Task]:
         """Paginate method in repository."""

@@ -19,8 +19,6 @@ services:
     restart: always
     depends_on:
       - mongo
-    env_file:
-      - config\docker.env
 
   mongo:
     image: mongo
@@ -30,8 +28,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
     ports:
       - "27017:27017"
-    env_file:
-      - config\docker.env
 
   mongo-express:
     image: mongo-express
@@ -44,5 +40,3 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT
     depends_on:
       - mongo
-    env_file:
-      - config\docker.env
