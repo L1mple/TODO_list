@@ -2,6 +2,7 @@ from dependency_injector import providers
 from fastapi import FastAPI
 from toolz import pipe
 
+from todo.core.task.services import DatabaseTaskService
 from todo.dependencies import Container
 from todo.service.mongo.repositories import MongoTaskRepository
 
@@ -12,10 +13,15 @@ from .task import endpoints as task_endpoints
 
 def create_api() -> FastAPI:
     """Instantiate FastAPI-based Web API."""
-    container = Container(
-        task_repository=providers.Singleton(MongoTaskRepository),
-    )
+    container = Container()
 
+    container.task_repository.override(providers.Singleton(MongoTaskRepository))
+    container.task_service.override(
+        providers.Singleton(
+            DatabaseTaskService,
+            repository=container.task_repository.provided,
+        )
+    )
     container.wire(packages=[common, task])
 
     return pipe(
