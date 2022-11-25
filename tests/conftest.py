@@ -2,12 +2,12 @@ from datetime import datetime
 
 import pytest
 
-from todo.domain.models import TaskDomain
+from todo.core.task.models import Task
 
 
 @pytest.fixture
 def make_task():
-    return TaskDomain(
+    return Task(
         uid="1",
         description="example_desc",
         deadline=datetime(2003, 1, 14),
