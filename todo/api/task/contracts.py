@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from caseconverter import camelcase
+from caseconverter import camelcase  # noqa
 from toolz import keymap
 
 from todo.api.common.contracts import JSONContract

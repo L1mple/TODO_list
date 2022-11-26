@@ -3,7 +3,7 @@ from beanie import PydanticObjectId
 from todo.core.common.models import TaskUID
 from todo.core.task.models import Task, UpdateTask
 from todo.core.task.repository import AbstractTaskRepository
-from todo.service.mongo.models import TaskMongoDb
+from todo.service.mongo.task.models import TaskMongoDb
 
 
 class MongoTaskRepository(AbstractTaskRepository):

@@ -31,8 +31,10 @@ def bootstrap(app: FastAPI) -> FastAPI:
 )
 @inject
 async def post_task(  # noqa
-    body: Task = Body(default=..., description="Task Model from domain"),
-    task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
+    body: Task = Body(default=..., description="Task Model from domain"),  # noqa
+    task_service: AbstractTaskService = Depends(  # noqa
+        Provide[Container.task_service]
+    ),
 ):
     uid = await task_service.create_one(body)
     return Response(
@@ -63,7 +65,9 @@ async def get_tasks(  # noqa
         le=50,
         description="How many query tasks will be fetched",
     ),
-    task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
+    task_service: AbstractTaskService = Depends(  # noqa
+        Provide[Container.task_service]
+    ),
 ):
     tasks = await task_service.get_many(page, per_page)
     if len(tasks) == 0:
@@ -84,10 +88,12 @@ async def get_tasks(  # noqa
 )
 @inject
 async def get_task_uid(  # noqa
-    uid: str = Path(
+    uid: str = Path(  # noqa
         default=..., regex="^[0-9a-f]{24}$", example="507f191e810c19729de860ea"
     ),
-    task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
+    task_service: AbstractTaskService = Depends(  # noqa
+        Provide[Container.task_service]
+    ),
 ):
     task = await task_service.get_by_uid(TaskUID(uid))
     if task is None:
@@ -108,10 +114,12 @@ async def get_task_uid(  # noqa
 )
 @inject
 async def patch_task_complete_uid(  # noqa
-    uid: str = Path(
+    uid: str = Path(  # noqa
         default=..., regex="^[0-9a-f]{24}$", example="507f191e810c19729de860ea"
     ),
-    task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
+    task_service: AbstractTaskService = Depends(  # noqa
+        Provide[Container.task_service]
+    ),
 ):
     updated_uid = await task_service.complete(uid)
 
@@ -139,10 +147,12 @@ async def patch_task_complete_uid(  # noqa
 )
 @inject
 async def patch_task(  # noqa
-    body: UpdateTask = Body(
+    body: UpdateTask = Body(  # noqa
         default=..., description="Fields to update in task, required uid field"
     ),
-    task_service: AbstractTaskService = Depends(Provide[Container.task_service]),
+    task_service: AbstractTaskService = Depends(  # noqa
+        Provide[Container.task_service]
+    ),
 ):
     updated_uid = await task_service.update_one(body)
 
@@ -168,11 +178,11 @@ async def patch_task(  # noqa
     },
 )
 @inject
-async def delete_task(
-    uid: str = Path(
+async def delete_task(  # noqa
+    uid: str = Path(  # noqa
         default=..., regex="^[0-9a-f]{24}$", example="507f191e810c19729de860ea"
     ),
-    task_service: AbstractTaskService = Depends(
+    task_service: AbstractTaskService = Depends(  # noqa
         Provide[Container.task_service],
     ),
 ):

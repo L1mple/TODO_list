@@ -4,7 +4,7 @@ from toolz import pipe
 
 from todo.core.task.services import DatabaseTaskService
 from todo.dependencies import Container
-from todo.service.mongo.repositories import MongoTaskRepository
+from todo.service.mongo.task.repositories import MongoTaskRepository
 
 from . import common, task
 from .common import dependencies, endpoints, error_handlers, event_handlers, middleware
