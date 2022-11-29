@@ -1,9 +1,11 @@
 from dependency_injector import containers, providers
 
 from todo.api.common.settings import ApiSettings
+from todo.core.auth.services import AbstractAuthService
 from todo.core.task.repository import AbstractTaskRepository
 from todo.core.task.services import AbstractTaskService
 from todo.core.user.repository import AbstractUserRepository
+from todo.core.user.services import AbstractUserService
 from todo.service.mongo.settings import MongoSettings
 
 
@@ -15,4 +17,8 @@ class Container(containers.DeclarativeContainer):
 
     task_repository = providers.AbstractSingleton(AbstractTaskRepository)
     task_service = providers.AbstractSingleton(AbstractTaskService)
+
     user_repository = providers.AbstractSingleton(AbstractUserRepository)
+    user_service = providers.AbstractSingleton(AbstractUserService)
+
+    auth_service = providers.AbstractSingleton(AbstractAuthService)

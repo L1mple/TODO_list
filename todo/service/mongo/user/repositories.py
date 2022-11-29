@@ -21,10 +21,19 @@ class MongoDbUserRepository(AbstractUserRepository):
         await UserMongoDb.save(user_doc)
         return UserUID(user_doc.username)
 
-    async def read_one_by_username(self, uid: UserUID) -> User | None:
+    async def read_one_by_uid(self, uid: UserUID) -> User | None:
         """Read method in repository."""
         result: UserMongoDb | None = await UserMongoDb.get(
             document_id=PydanticObjectId(uid)
+        )
+        if result is None:
+            return None
+        return result.to_entity()
+
+    async def read_one_by_username(self, username: str) -> User | None:
+        """Read method in repository."""
+        result: UserMongoDb | None = await UserMongoDb.find_one(
+            UserMongoDb.username == username
         )
         if result is None:
             return None

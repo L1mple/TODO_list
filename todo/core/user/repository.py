@@ -14,6 +14,10 @@ class AbstractUserRepository(Protocol):
         """Abstract method in generic repository."""
         raise NotImplementedError
 
+    async def read_one_by_username(self, username: str) -> User | None:
+        """Abstract method in generic repository."""
+        raise NotImplementedError
+
     async def delete_one_by_uid(self, uid: UserUID) -> None | UserUID:
         """Abstract method in generic repository."""
         raise NotImplementedError
