@@ -5,9 +5,9 @@ from jose import jwt
 from passlib.context import CryptContext
 
 from todo.core.auth.settings import AuthSettings
+from todo.core.user.models import User
+from todo.core.user.services import AbstractUserService
 
-from ..user.models import User
-from ..user.services import AbstractUserService
 from .models import Token
 
 
@@ -19,7 +19,9 @@ class AbstractAuthService(Protocol):
         raise NotImplementedError
 
     async def create_access_token(
-        self, data: dict, expires_delta: timedelta | None
+        self,
+        username: str,
+        auth_settings: AuthSettings,
     ) -> Token:
         """Abstract method of creating Token."""
         raise NotImplementedError
@@ -28,9 +30,13 @@ class AbstractAuthService(Protocol):
 class AuthService(AbstractAuthService):
     """Implementation of AbstractAuthService."""
 
-    def __init__(self, user_service: AbstractUserService) -> None:
+    def __init__(
+        self,
+        user_service: AbstractUserService,
+        pwd_context: CryptContext,
+    ) -> None:
         self.user_service = user_service
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        self.pwd_context = pwd_context
 
     async def authentificate_user(self, username: str, password: str) -> User | None:
         """Implementation method of auth User."""
@@ -44,21 +50,21 @@ class AuthService(AbstractAuthService):
         return user
 
     async def create_access_token(
-        self, data: dict, expires_delta: timedelta | None
+        self,
+        username: str,
+        auth_settings: AuthSettings,
     ) -> Token:
         """Implemetation of method to create jwt token."""
+        data = {"sub": username}
         to_encode = data.copy()
-        if expires_delta:
-            expire = datetime.utcnow() + expires_delta
-        else:
-            expire = datetime.utcnow() + timedelta(
-                minutes=AuthSettings().ACCESS_TOKEN_EXPIRE_MINUTES
-            )
-        to_encode.update({"exp": expire})
+        expire = datetime.utcnow() + timedelta(
+            minutes=auth_settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+        to_encode.update({"exp": str(expire)})
         encoded_jwt = jwt.encode(
             to_encode,
-            AuthSettings().SECRET_KEY.get_secret_value(),
-            algorithm=AuthSettings().ALGORITHM,
+            auth_settings.SECRET_KEY.get_secret_value(),
+            algorithm=auth_settings.ALGORITHM,
         )
         return Token(  # noqa
             access_token=encoded_jwt,

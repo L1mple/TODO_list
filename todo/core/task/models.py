@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import Field
 
-from ..common.models import Auditable, Entity, TaskUID
+from todo.core.common.models import Auditable, Entity, TaskUID
 
 
 class Task(Entity[TaskUID], Auditable):

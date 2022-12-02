@@ -1,6 +1,6 @@
 from pydantic import EmailStr
 
-from ..common.models import Entity, UserUID
+from todo.core.common.models import Entity, UserUID
 
 
 class User(Entity[UserUID]):

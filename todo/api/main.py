@@ -31,7 +31,11 @@ def create_api() -> FastAPI:
         providers.Singleton(UserService, repository=container.user_repository.provided)
     )
     container.auth_service.override(
-        providers.Singleton(AuthService, user_service=container.user_service.provided)
+        providers.Singleton(
+            AuthService,
+            user_service=container.user_service.provided,
+            pwd_context=container.crypt_settings.provided,
+        )
     )
     container.wire(packages=[common, task, auth])
 

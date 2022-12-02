@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -34,6 +32,7 @@ async def post_token(
     auth_service: AbstractAuthService = Depends(  # noqa
         Provide[Container.auth_service]
     ),
+    auth_settings: AuthSettings = Depends(Provide[Container.auth_settings]),  # noqa
 ):
     """Take data from form.
 
@@ -48,8 +47,7 @@ async def post_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=AuthSettings().ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token: Token = await auth_service.create_access_token(
-        {"sub": user.username}, expires_delta=access_token_expires
+        user.username, auth_settings=auth_settings
     )
     return TokenJSONResponse.from_entity(access_token)
