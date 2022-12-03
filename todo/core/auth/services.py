@@ -11,6 +11,12 @@ from todo.core.user.services import AbstractUserService
 from .models import Token
 
 
+class CryptService:
+    """Crypt settings."""
+
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 class AbstractAuthService(Protocol):
     """Abstract service."""
 
@@ -33,10 +39,10 @@ class AuthService(AbstractAuthService):
     def __init__(
         self,
         user_service: AbstractUserService,
-        pwd_context: CryptContext,
+        crypt_service: CryptService,
     ) -> None:
         self.user_service = user_service
-        self.pwd_context = pwd_context
+        self.pwd_context = crypt_service.pwd_context
 
     async def authentificate_user(self, username: str, password: str) -> User | None:
         """Implementation method of auth User."""

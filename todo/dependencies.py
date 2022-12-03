@@ -1,8 +1,7 @@
 from dependency_injector import containers, providers
-from passlib.context import CryptContext
 
 from todo.api.common.settings import ApiSettings
-from todo.core.auth.services import AbstractAuthService
+from todo.core.auth.services import AbstractAuthService, CryptService
 from todo.core.auth.settings import AuthSettings
 from todo.core.task.repository import AbstractTaskRepository
 from todo.core.task.services import AbstractTaskService
@@ -17,9 +16,8 @@ class Container(containers.DeclarativeContainer):
     mongo_settings = providers.Object(MongoSettings())
     api_settings = providers.Object(ApiSettings())
     auth_settings = providers.Object(AuthSettings())
-    crypt_settings = providers.Object(
-        CryptContext(schemes=["bcrypt"], deprecated="auto")
-    )
+
+    crypt_service = providers.Singleton(CryptService)
 
     task_repository = providers.AbstractSingleton(AbstractTaskRepository)
     task_service = providers.AbstractSingleton(AbstractTaskService)

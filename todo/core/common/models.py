@@ -7,6 +7,7 @@ TUID = TypeVar("TUID")
 
 TaskUID = str
 UserUID = str
+IdentityUID = str
 
 
 class Entity(Generic[TUID], BaseModel):

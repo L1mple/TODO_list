@@ -6,7 +6,7 @@ from todo.core.task.models import Task, TaskUID, UpdateTask
 
 
 class TaskMongoDb(Document):
-    """Domain model for Task of TODO_list."""
+    """Database model for Task of TODO_list."""
 
     created_at: datetime | None
     updated_at: datetime | None
@@ -22,7 +22,7 @@ class TaskMongoDb(Document):
         name = "tasks"
 
     def to_entity(self) -> Task:
-        """Convert TaskMongoDb to Task from domain."""
+        """Convert TaskMongoDb to Task from database."""
         return Task(
             uid=TaskUID(self.id),
             **self.dict(exclude={"id"}),  # Возможно тут надо написать {"_id"}

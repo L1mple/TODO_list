@@ -34,9 +34,10 @@ def create_api() -> FastAPI:
         providers.Singleton(
             AuthService,
             user_service=container.user_service.provided,
-            pwd_context=container.crypt_settings.provided,
+            crypt_service=container.crypt_service,
         )
     )
+
     container.wire(packages=[common, task, auth])
 
     return pipe(
