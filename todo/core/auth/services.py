@@ -4,8 +4,10 @@ from typing import Protocol
 from jose import jwt
 from passlib.context import CryptContext
 
+from todo.core.auth.models import Identity, IdentityUID
+from todo.core.auth.repository import AbstractIdentityRepository
 from todo.core.auth.settings import AuthSettings
-from todo.core.user.models import User
+from todo.core.user.models import User, UserSingUp, UserUID
 from todo.core.user.services import AbstractUserService
 
 from .models import Token
@@ -32,17 +34,27 @@ class AbstractAuthService(Protocol):
         """Abstract method of creating Token."""
         raise NotImplementedError
 
+    async def register(self, user: UserSingUp) -> UserUID | None:
+        """Abstract method of signup User."""
+        raise NotImplementedError
+
+    async def read_one_by_uid(self, uid: IdentityUID) -> Identity | None:
+        """Abstract method for read info from Db."""
+        raise NotImplementedError
+
 
 class AuthService(AbstractAuthService):
     """Implementation of AbstractAuthService."""
 
     def __init__(
         self,
+        repository: AbstractIdentityRepository,
         user_service: AbstractUserService,
         crypt_service: CryptService,
     ) -> None:
         self.user_service = user_service
         self.pwd_context = crypt_service.pwd_context
+        self.repository = repository
 
     async def authentificate_user(self, username: str, password: str) -> User | None:
         """Implementation method of auth User."""
@@ -51,7 +63,10 @@ class AuthService(AbstractAuthService):
         )
         if user is None:
             return None
-        if not self.pwd_context.verify(password, user.hashed_password):
+        user_identity = await self.repository.read_one_by_uid(user.identity)
+        if user_identity is None:
+            return None
+        if not self.pwd_context.verify(password, user_identity.hashed_password):
             return None
         return user
 
@@ -76,3 +91,29 @@ class AuthService(AbstractAuthService):
             access_token=encoded_jwt,
             token_type="bearer",
         )
+
+    async def register(self, user: UserSingUp) -> UserUID | None:
+        """Implementation of method to register User."""
+        existing_user: User | None = await self.user_service.read_one_by_username(
+            UserUID(user.username)
+        )
+        if existing_user is not None:
+            return None
+
+        hashed_pass = self.pwd_context.hash(user.password)
+
+        identity_to_create = Identity(hashed_password=hashed_pass)
+        identity_created_uid = await self.repository.create_one(identity_to_create)
+
+        user_to_create = User(
+            identity=identity_created_uid, **user.dict(exclude={"password"})
+        )
+        user_created_uid = await self.user_service.create_one(
+            user_to_create
+        )  # Тут надо написать если юзер не создался -> Удалить созданную identity -> return None
+
+        return user_created_uid
+
+    async def read_one_by_uid(self, uid: IdentityUID) -> Identity | None:
+        """Implementation of abstract method from AbstractAuthService."""
+        return await self.repository.read_one_by_uid(uid)

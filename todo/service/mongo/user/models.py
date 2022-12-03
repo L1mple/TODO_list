@@ -1,7 +1,7 @@
 from beanie import Document, PydanticObjectId
 from pydantic import EmailStr
 
-from todo.core.user.models import UpdateUser, User, UserUID
+from todo.core.user.models import IdentityUID, UpdateUser, User, UserUID
 
 
 class UserMongoDb(Document):
@@ -12,7 +12,7 @@ class UserMongoDb(Document):
     full_name: str | None
     active: bool
     admin: bool
-    hashed_password: str
+    identity: IdentityUID
 
     class Settings:
         """Config for UserMongoDb."""

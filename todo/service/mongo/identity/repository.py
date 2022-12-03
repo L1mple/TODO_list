@@ -5,7 +5,7 @@ from todo.core.auth.repository import AbstractIdentityRepository
 from todo.service.mongo.identity.models import IdentityMongoDb
 
 
-class MongoTaskRepository(AbstractIdentityRepository):
+class MongoDbIdentityRepository(AbstractIdentityRepository):
     """Implementation of AbstractIdentityRepository."""
 
     async def create_one(self, identity: Identity) -> IdentityUID:

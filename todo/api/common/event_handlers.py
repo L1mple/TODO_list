@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from todo.dependencies import Container
+from todo.service.mongo.identity.models import IdentityMongoDb
 from todo.service.mongo.settings import MongoSettings
 from todo.service.mongo.task.models import TaskMongoDb
 from todo.service.mongo.user.models import UserMongoDb
@@ -25,5 +26,5 @@ async def initialize_beanie(
 
     await init_beanie(
         database=client[mongo_settings.DATABASE],
-        document_models=[TaskMongoDb, UserMongoDb],
+        document_models=[TaskMongoDb, UserMongoDb, IdentityMongoDb],
     )

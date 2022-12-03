@@ -1,6 +1,6 @@
-from pydantic import EmailStr
+from pydantic import BaseModel, EmailStr
 
-from todo.core.common.models import Entity, UserUID
+from todo.core.common.models import Entity, IdentityUID, UserUID
 
 
 class User(Entity[UserUID]):
@@ -9,19 +9,21 @@ class User(Entity[UserUID]):
     username: str
     email: EmailStr
     full_name: str | None
-    active: bool
+    active: bool = True
     admin: bool = False
-    hashed_password: str
+    identity: IdentityUID
 
     class Config:
         """Extra config for User model."""
 
         schema_extra = {
             "example": {
+                "uid": "507f191e810c19729de860ea",
                 "username": "example_username",
                 "email": "123@examplemail.com",
                 "full_name": "example name",
                 "active": "False",
+                "identity": "str",
             }
         }
 
@@ -34,7 +36,26 @@ class UpdateUser(Entity[UserUID]):
     full_name: str | None
     active: bool | None
     admin: bool | None
-    hashed_password: str | None
+
+    class Config:
+        """Extra config for UpdateUser model."""
+
+        schema_extra = {
+            "example": {
+                "uid": "507f191e810c19729de860ea",
+                "username": "example_username",
+                "email": "other123@examplemail.com",
+                "full_name": "other example name",
+            }
+        }
+
+
+class UserSingUp(BaseModel):
+    """Domain model for SignUp endpoint."""
+
+    username: str
+    email: EmailStr
+    password: str
 
     class Config:
         """Extra config for UpdateUser model."""
@@ -43,6 +64,6 @@ class UpdateUser(Entity[UserUID]):
             "example": {
                 "username": "example_username",
                 "email": "other123@examplemail.com",
-                "full_name": "other example name",
+                "password": "1234",
             }
         }

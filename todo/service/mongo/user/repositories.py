@@ -10,12 +10,14 @@ class MongoDbUserRepository(AbstractUserRepository):
     async def create_one(self, user: User) -> UserUID | None:
         """Create method in repository."""
         user_doc = UserMongoDb.from_user_entity(user)
-        result_by_username = UserMongoDb.find_one(
+        result_by_username = await UserMongoDb.find_one(
             UserMongoDb.username == user_doc.username
         )
         if result_by_username is not None:
             return None
-        result_by_email = UserMongoDb.find_one(UserMongoDb.email == user_doc.email)
+        result_by_email = await UserMongoDb.find_one(
+            UserMongoDb.email == user_doc.email
+        )
         if result_by_email is not None:
             return None
         await UserMongoDb.save(user_doc)

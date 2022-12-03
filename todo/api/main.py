@@ -6,6 +6,7 @@ from todo.core.auth.services import AuthService
 from todo.core.task.services import DatabaseTaskService
 from todo.core.user.services import UserService
 from todo.dependencies import Container
+from todo.service.mongo.identity.repository import MongoDbIdentityRepository
 from todo.service.mongo.task.repositories import MongoTaskRepository
 from todo.service.mongo.user.repositories import MongoDbUserRepository
 
@@ -13,6 +14,7 @@ from . import auth, common, task
 from .auth import endpoints as auth_endpoints
 from .common import dependencies, endpoints, error_handlers, event_handlers, middleware
 from .task import endpoints as task_endpoints
+from .user import endpoints as user_endpoints
 
 
 def create_api() -> FastAPI:
@@ -30,9 +32,13 @@ def create_api() -> FastAPI:
     container.user_service.override(
         providers.Singleton(UserService, repository=container.user_repository.provided)
     )
+    container.identity_repository.override(
+        providers.Singleton(MongoDbIdentityRepository)
+    )
     container.auth_service.override(
         providers.Singleton(
             AuthService,
+            repository=container.identity_repository.provided,
             user_service=container.user_service.provided,
             crypt_service=container.crypt_service,
         )
@@ -51,4 +57,5 @@ def create_api() -> FastAPI:
         endpoints.bootstrap,
         task_endpoints.bootstrap,
         auth_endpoints.bootstrap,
+        user_endpoints.bootstrap,
     )
