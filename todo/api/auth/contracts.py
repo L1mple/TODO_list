@@ -1,11 +1,9 @@
-from caseconverter import camelcase  # noqa
-from toolz import keymap
+from pydantic import BaseModel
 
-from todo.api.common.contracts import JSONContract
 from todo.core.auth.models import Token
 
 
-class TokenJSONResponse(JSONContract):
+class TokenJSONResponse(BaseModel):
     """JSONRespponse for Task."""
 
     access_token: str
@@ -14,4 +12,4 @@ class TokenJSONResponse(JSONContract):
     @staticmethod
     def from_entity(entity: Token) -> "TokenJSONResponse":
         """Convert Task to JSONResponse."""
-        return TokenJSONResponse(**keymap(camelcase, entity.dict()))
+        return TokenJSONResponse(**entity.dict())

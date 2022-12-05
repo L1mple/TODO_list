@@ -1,5 +1,9 @@
 from typing import Protocol
 
+from jose import JWTError, jwt
+
+from todo.core.auth.settings import AuthSettings
+
 from .models import UpdateUser, User, UserUID
 from .repository import AbstractUserRepository
 
@@ -25,6 +29,14 @@ class AbstractUserService(Protocol):
 
     async def delete_one_by_uid(self, uid: UserUID) -> None | UserUID:
         """Abstract method to delete User document."""
+        raise NotImplementedError
+
+    async def decode_username_from_token(
+        self,
+        token: str,
+        auth_settings: AuthSettings,
+    ):
+        """Abstract method to encode jwt token."""
         raise NotImplementedError
 
 
@@ -53,3 +65,22 @@ class UserService(AbstractUserService):
     async def delete_one_by_uid(self, uid: UserUID) -> None | UserUID:
         """Implementation of abstract method from AbstractUserService."""
         return await self.repository.delete_one_by_uid(uid)
+
+    async def decode_username_from_token(
+        self,
+        token: str,
+        auth_settings: AuthSettings,
+    ):
+        """Implementation fo abstract method from AbstractUserService."""
+        try:
+            payload = jwt.decode(
+                token=token,
+                key=auth_settings.SECRET_KEY.get_secret_value(),
+                algorithms=[auth_settings.ALGORITHM],
+            )
+            username: str | None = payload.get("sub")
+            if username is None:
+                return None
+        except JWTError:
+            return None
+        return username

@@ -10,7 +10,7 @@ from todo.service.mongo.identity.repository import MongoDbIdentityRepository
 from todo.service.mongo.task.repositories import MongoTaskRepository
 from todo.service.mongo.user.repositories import MongoDbUserRepository
 
-from . import auth, common, task
+from . import auth, common, task, user
 from .auth import endpoints as auth_endpoints
 from .common import dependencies, endpoints, error_handlers, event_handlers, middleware
 from .task import endpoints as task_endpoints
@@ -44,7 +44,7 @@ def create_api() -> FastAPI:
         )
     )
 
-    container.wire(packages=[common, task, auth])
+    container.wire(packages=[common, task, auth, user])
 
     return pipe(
         container.api_settings().create_app(),

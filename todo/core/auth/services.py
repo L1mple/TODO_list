@@ -16,7 +16,8 @@ from .models import Token
 class CryptService:
     """Crypt settings."""
 
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    def __init__(self) -> None:
+        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AbstractAuthService(Protocol):
@@ -81,7 +82,7 @@ class AuthService(AbstractAuthService):
         expire = datetime.utcnow() + timedelta(
             minutes=auth_settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
-        to_encode.update({"exp": str(expire)})
+        to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(
             to_encode,
             auth_settings.SECRET_KEY.get_secret_value(),
@@ -108,10 +109,10 @@ class AuthService(AbstractAuthService):
         user_to_create = User(
             identity=identity_created_uid, **user.dict(exclude={"password"})
         )
-        user_created_uid = await self.user_service.create_one(
-            user_to_create
-        )  # Тут надо написать если юзер не создался -> Удалить созданную identity -> return None
-
+        user_created_uid = await self.user_service.create_one(user_to_create)
+        if user_created_uid is None:
+            await self.repository.delete_one_by_uid(identity_created_uid)
+            return None
         return user_created_uid
 
     async def read_one_by_uid(self, uid: IdentityUID) -> Identity | None:
