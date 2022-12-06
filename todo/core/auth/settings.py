@@ -7,6 +7,7 @@ class AuthSettings(BaseSettings):
     SECRET_KEY: SecretStr = Field(default="5ecret_k3y")
     ALGORITHM: str = Field(default="HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
+    TOKEN_URL: str = Field(default="auth/login")
 
     class Config:
         """Settings for env files."""

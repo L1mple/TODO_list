@@ -50,7 +50,7 @@ class UpdateUser(Entity[UserUID]):
         }
 
 
-class UserSingUp(BaseModel):
+class UserSignUp(BaseModel):
     """Domain model for SignUp endpoint."""
 
     username: str

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from beanie import Document, PydanticObjectId
 
-from todo.core.task.models import Task, TaskUID, UpdateTask
+from todo.core.task.models import Task, TaskUID, UpdateTask, UserUID
 
 
 class TaskMongoDb(Document):
@@ -15,6 +15,7 @@ class TaskMongoDb(Document):
     exp_date: datetime | None
     done: bool | None
     expired: bool | None
+    to_user: UserUID | None
 
     class Settings:
         """Config for TaskMongoDb."""

@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
 from todo.api.auth.contracts import TokenJSONResponse
-from todo.core.auth.models import Token
 from todo.core.auth.settings import AuthSettings
 from todo.core.user.models import User
 from todo.core.user.services import AbstractUserService
@@ -31,8 +30,10 @@ def bootstrap(app: FastAPI) -> FastAPI:
 )
 @inject
 async def read_users_me(
-    token: TokenJSONResponse = Depends(oauth2_scheme),
-    user_service: AbstractUserService = Depends(Provide[Container.user_service]),
+    token: TokenJSONResponse = Depends(oauth2_scheme),  # noqa
+    user_service: AbstractUserService = Depends(  # noqa
+        Provide[Container.user_service]
+    ),
     auth_settings: AuthSettings = Depends(Provide[Container.auth_settings]),  # noqa
 ):
     """Fetch the current logged in user."""

@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from todo.core.auth.models import Token
 from todo.core.auth.services import AbstractAuthService
 from todo.core.auth.settings import AuthSettings
-from todo.core.user.models import User, UserSingUp
+from todo.core.user.models import User, UserSignUp
 from todo.dependencies import Container
 
 from .contracts import TokenJSONResponse
@@ -61,7 +61,7 @@ async def post_login(
 )
 @inject
 async def post_signup(
-    new_user: UserSingUp = Body(default=..., description="Data about new user"),  # noqa
+    new_user: UserSignUp = Body(default=..., description="Data about new user"),  # noqa
     auth_service: AbstractAuthService = Depends(  # noqa
         Provide[Container.auth_service]
     ),
@@ -73,7 +73,21 @@ async def post_signup(
     -> if not -> create new user;
     -> response with Token.
     """
-    result = await auth_service.register(new_user)
+    hashed_password = await auth_service.get_password_hash(new_user.password)
+    existing_user = await auth_service.check_if_user_exists(new_user.username)
+    if existing_user is not None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User with this username or email already exists",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    result = await auth_service.register(
+        UserSignUp(
+            username=new_user.username,
+            password=hashed_password,
+            email=new_user.email,
+        )
+    )
     if result is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

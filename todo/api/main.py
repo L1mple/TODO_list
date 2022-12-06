@@ -2,6 +2,7 @@ from dependency_injector import providers
 from fastapi import FastAPI
 from toolz import pipe
 
+from todo.api.auth.dependencies import CryptService
 from todo.core.auth.services import AuthService
 from todo.core.task.services import DatabaseTaskService
 from todo.core.user.services import UserService
@@ -21,6 +22,7 @@ def create_api() -> FastAPI:
     """Instantiate FastAPI-based Web API."""
     container = Container()
 
+    container.crypt_service.override(providers.Singleton(CryptService))
     container.task_repository.override(providers.Singleton(MongoTaskRepository))
     container.task_service.override(
         providers.Singleton(
@@ -40,7 +42,7 @@ def create_api() -> FastAPI:
             AuthService,
             repository=container.identity_repository.provided,
             user_service=container.user_service.provided,
-            crypt_service=container.crypt_service,
+            crypt_service=container.crypt_service.provided,
         )
     )
 

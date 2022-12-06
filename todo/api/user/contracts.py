@@ -4,7 +4,7 @@ from toolz import keymap
 
 from todo.api.common.contracts import JSONContract
 from todo.core.user.models import User
-from todo.core.common.models import IdentityUID
+
 
 class UserJSONResponse(JSONContract):
     """JSONRespponse for User."""
@@ -16,7 +16,7 @@ class UserJSONResponse(JSONContract):
     full_name: str | None
     active: bool
     admin: bool
-    identity: IdentityUID
+    identity: str
 
     @staticmethod
     def from_entity(entity: User) -> "UserJSONResponse":

@@ -2,22 +2,15 @@ from datetime import datetime, timedelta
 from typing import Protocol
 
 from jose import jwt
-from passlib.context import CryptContext
 
+from todo.api.auth.dependencies import CryptService
 from todo.core.auth.models import Identity, IdentityUID
 from todo.core.auth.repository import AbstractIdentityRepository
 from todo.core.auth.settings import AuthSettings
-from todo.core.user.models import User, UserSingUp, UserUID
+from todo.core.user.models import User, UserSignUp, UserUID
 from todo.core.user.services import AbstractUserService
 
 from .models import Token
-
-
-class CryptService:
-    """Crypt settings."""
-
-    def __init__(self) -> None:
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AbstractAuthService(Protocol):
@@ -35,12 +28,20 @@ class AbstractAuthService(Protocol):
         """Abstract method of creating Token."""
         raise NotImplementedError
 
-    async def register(self, user: UserSingUp) -> UserUID | None:
+    async def register(self, user: UserSignUp) -> UserUID | None:
         """Abstract method of signup User."""
         raise NotImplementedError
 
     async def read_one_by_uid(self, uid: IdentityUID) -> Identity | None:
         """Abstract method for read info from Db."""
+        raise NotImplementedError
+
+    async def get_password_hash(self, password: str) -> str:
+        """Abstract method for hash password."""
+        raise NotImplementedError
+
+    async def check_if_user_exists(self, username: str) -> User | None:
+        """Abstract method for check if user already exists."""
         raise NotImplementedError
 
 
@@ -93,17 +94,9 @@ class AuthService(AbstractAuthService):
             token_type="bearer",
         )
 
-    async def register(self, user: UserSingUp) -> UserUID | None:
+    async def register(self, user: UserSignUp) -> UserUID | None:
         """Implementation of method to register User."""
-        existing_user: User | None = await self.user_service.read_one_by_username(
-            UserUID(user.username)
-        )
-        if existing_user is not None:
-            return None
-
-        hashed_pass = self.pwd_context.hash(user.password)
-
-        identity_to_create = Identity(hashed_password=hashed_pass)
+        identity_to_create = Identity(hashed_password=user.password)
         identity_created_uid = await self.repository.create_one(identity_to_create)
 
         user_to_create = User(
@@ -114,6 +107,17 @@ class AuthService(AbstractAuthService):
             await self.repository.delete_one_by_uid(identity_created_uid)
             return None
         return user_created_uid
+
+    async def check_if_user_exists(self, username: str) -> User | None:
+        """Implemetation of method to check if user exists."""
+        existing_user: User | None = await self.user_service.read_one_by_username(
+            UserUID(username)
+        )
+        return existing_user
+
+    async def get_password_hash(self, password: str) -> str:
+        """Implementation of abstract method."""
+        return self.pwd_context.hash(password)
 
     async def read_one_by_uid(self, uid: IdentityUID) -> Identity | None:
         """Implementation of abstract method from AbstractAuthService."""

@@ -19,6 +19,7 @@ class TaskJSONResponse(JSONContract):
     done: bool = False
     updated_at: datetime | None = None
     expired: bool = False
+    to_user: str | None
 
     @staticmethod
     def from_entity(entity: Task) -> "TaskJSONResponse":

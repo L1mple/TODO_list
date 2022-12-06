@@ -1,8 +1,9 @@
 from dependency_injector import containers, providers
 
+# from todo.api.auth.dependencies import AuthScheme
 from todo.api.common.settings import ApiSettings
 from todo.core.auth.repository import AbstractIdentityRepository
-from todo.core.auth.services import AbstractAuthService, CryptService
+from todo.core.auth.services import AbstractAuthService
 from todo.core.auth.settings import AuthSettings
 from todo.core.task.repository import AbstractTaskRepository
 from todo.core.task.services import AbstractTaskService
@@ -18,7 +19,10 @@ class Container(containers.DeclarativeContainer):
     api_settings = providers.Object(ApiSettings())
     auth_settings = providers.Object(AuthSettings())
 
-    crypt_service = providers.Singleton(CryptService)
+    crypt_service = providers.AbstractSingleton()
+    # auth_scheme = providers.Callable(
+    #     AuthScheme, token_url=auth_settings.provided.TOKEN_URL
+    # )
 
     task_repository = providers.AbstractSingleton(AbstractTaskRepository)
     task_service = providers.AbstractSingleton(AbstractTaskService)
