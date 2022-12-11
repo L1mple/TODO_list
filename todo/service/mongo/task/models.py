@@ -15,7 +15,7 @@ class TaskMongoDb(Document):
     exp_date: datetime | None
     done: bool | None
     expired: bool | None
-    to_user: UserUID | None
+    owner_uid: UserUID | None
 
     class Settings:
         """Config for TaskMongoDb."""

@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from typing import Protocol
 
 from jose import jwt
+from passlib.context import CryptContext
 
-from todo.api.auth.dependencies import CryptService
 from todo.core.auth.models import Identity, IdentityUID
 from todo.core.auth.repository import AbstractIdentityRepository
 from todo.core.auth.settings import AuthSettings
@@ -52,10 +52,10 @@ class AuthService(AbstractAuthService):
         self,
         repository: AbstractIdentityRepository,
         user_service: AbstractUserService,
-        crypt_service: CryptService,
+        crypt_service: CryptContext,
     ) -> None:
         self.user_service = user_service
-        self.pwd_context = crypt_service.pwd_context
+        self.pwd_context = crypt_service
         self.repository = repository
 
     async def authentificate_user(self, username: str, password: str) -> User | None:
@@ -65,7 +65,7 @@ class AuthService(AbstractAuthService):
         )
         if user is None:
             return None
-        user_identity = await self.repository.read_one_by_uid(user.identity)
+        user_identity = await self.repository.read_one_by_uid(user.identity_uid)
         if user_identity is None:
             return None
         if not self.pwd_context.verify(password, user_identity.hashed_password):
@@ -100,7 +100,7 @@ class AuthService(AbstractAuthService):
         identity_created_uid = await self.repository.create_one(identity_to_create)
 
         user_to_create = User(
-            identity=identity_created_uid, **user.dict(exclude={"password"})
+            identity_uid=identity_created_uid, **user.dict(exclude={"password"})
         )
         user_created_uid = await self.user_service.create_one(user_to_create)
         if user_created_uid is None:

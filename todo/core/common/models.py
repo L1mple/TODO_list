@@ -5,10 +5,6 @@ from pydantic import BaseModel, Field
 
 TUID = TypeVar("TUID")
 
-TaskUID = str
-UserUID = str
-IdentityUID = str
-
 
 class Entity(Generic[TUID], BaseModel):
     """Base class with uid."""

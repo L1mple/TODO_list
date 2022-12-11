@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 
-from todo.core.common.models import Entity, IdentityUID
+from todo.core.common.models import Entity
+
+IdentityUID = str
 
 
 class Token(BaseModel):

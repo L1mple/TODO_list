@@ -1,7 +1,6 @@
 from beanie import PydanticObjectId
 
-from todo.core.common.models import TaskUID
-from todo.core.task.models import Task, UpdateTask
+from todo.core.task.models import Task, TaskUID, UpdateTask
 from todo.core.task.repository import AbstractTaskRepository
 from todo.service.mongo.task.models import TaskMongoDb
 
@@ -42,9 +41,9 @@ class MongoTaskRepository(AbstractTaskRepository):
         await existing_document.delete()
         return TaskUID(existing_document.id)
 
-    async def get_many(self, page: int = 0, per_page: int = 10) -> list[Task]:
+    async def get_many(self, page: int = 1, per_page: int = 10) -> list[Task]:
         """Paginate method in repository."""
         existing_docs: list[TaskMongoDb] = await (
-            TaskMongoDb.find().skip(page * per_page).limit(per_page).to_list()
+            TaskMongoDb.find().skip((page - 1) * per_page).limit(per_page).to_list()
         )
         return list(map(TaskMongoDb.to_entity, existing_docs))

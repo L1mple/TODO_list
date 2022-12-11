@@ -16,7 +16,6 @@ class UserJSONResponse(JSONContract):
     full_name: str | None
     active: bool
     admin: bool
-    identity: str
 
     @staticmethod
     def from_entity(entity: User) -> "UserJSONResponse":

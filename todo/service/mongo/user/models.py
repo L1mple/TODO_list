@@ -12,7 +12,7 @@ class UserMongoDb(Document):
     full_name: str | None
     active: bool
     admin: bool
-    identity: IdentityUID
+    identity_uid: IdentityUID
 
     class Settings:
         """Config for UserMongoDb."""

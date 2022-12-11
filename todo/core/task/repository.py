@@ -22,6 +22,6 @@ class AbstractTaskRepository(Protocol):
         """Abstract method in generic repository."""
         raise NotImplementedError
 
-    async def get_many(self, page: int = 0, per_page: int = 10) -> list[Task]:
+    async def get_many(self, page: int = 1, per_page: int = 10) -> list[Task]:
         """Abstract method in generic repository."""
         raise NotImplementedError

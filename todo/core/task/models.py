@@ -2,7 +2,10 @@ from datetime import datetime
 
 from pydantic import Field
 
-from todo.core.common.models import Auditable, Entity, TaskUID, UserUID
+from todo.core.common.models import Auditable, Entity
+from todo.core.user.models import UserUID
+
+TaskUID = str
 
 
 class Task(Entity[TaskUID], Auditable):
@@ -13,7 +16,7 @@ class Task(Entity[TaskUID], Auditable):
     exp_date: datetime | None = None
     done: bool = False
     expired: bool = False
-    to_user: UserUID | None
+    owner_uid: UserUID | None = None
 
     class Config:
         """Extra config for Task model."""
@@ -41,7 +44,7 @@ class UpdateTask(Entity[TaskUID]):
     exp_date: datetime | None = None
     done: bool | None = None
     expired: bool | None = None
-    to_user: UserUID | None
+    owner_uid: UserUID | None = None
 
     class Config:
         """Extra config for UpdateTask model."""

@@ -1,10 +1,8 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from fastapi import APIRouter, Depends, FastAPI, status
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
 
-from todo.api.auth.contracts import TokenJSONResponse
-from todo.core.auth.settings import AuthSettings
+from todo.api.auth.dependencies import get_current_user
 from todo.core.user.models import User
 from todo.core.user.services import AbstractUserService
 from todo.dependencies import Container
@@ -12,7 +10,6 @@ from todo.dependencies import Container
 from .contracts import UserJSONResponse
 
 router = APIRouter(prefix="/user", tags=["User"])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def bootstrap(app: FastAPI) -> FastAPI:
@@ -30,26 +27,12 @@ def bootstrap(app: FastAPI) -> FastAPI:
 )
 @inject
 async def read_users_me(
-    token: TokenJSONResponse = Depends(oauth2_scheme),  # noqa
+    current_username: str = Depends(get_current_user),  # noqa
     user_service: AbstractUserService = Depends(  # noqa
         Provide[Container.user_service]
     ),
-    auth_settings: AuthSettings = Depends(Provide[Container.auth_settings]),  # noqa
 ):
     """Fetch the current logged in user."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    current_username = None
-    try:
-        current_username = await user_service.decode_username_from_token(
-            str(token), auth_settings
-        )
-    finally:
-        if current_username is None:
-            raise credentials_exception
     current_user: User | None = await user_service.read_one_by_username(
         current_username
     )

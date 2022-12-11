@@ -1,6 +1,9 @@
 from pydantic import BaseModel, EmailStr
 
-from todo.core.common.models import Entity, IdentityUID, UserUID
+from todo.core.auth.models import IdentityUID
+from todo.core.common.models import Entity
+
+UserUID = str
 
 
 class User(Entity[UserUID]):
@@ -11,7 +14,7 @@ class User(Entity[UserUID]):
     full_name: str | None
     active: bool = True
     admin: bool = False
-    identity: IdentityUID
+    identity_uid: IdentityUID
 
     class Config:
         """Extra config for User model."""
