@@ -5,13 +5,11 @@ from pydantic import BaseModel, Field
 
 TUID = TypeVar("TUID")
 
-TaskUID = str
-
 
 class Entity(Generic[TUID], BaseModel):
     """Base class with uid."""
 
-    uid: TUID
+    uid: TUID | None
 
 
 class Auditable(BaseModel):

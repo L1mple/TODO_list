@@ -2,11 +2,11 @@ from datetime import datetime
 
 from beanie import Document, PydanticObjectId
 
-from todo.core.task.models import Task, TaskUID, UpdateTask
+from todo.core.task.models import Task, TaskUID, UpdateTask, UserUID
 
 
 class TaskMongoDb(Document):
-    """Domain model for Task of TODO_list."""
+    """Database model for Task of TODO_list."""
 
     created_at: datetime | None
     updated_at: datetime | None
@@ -15,6 +15,7 @@ class TaskMongoDb(Document):
     exp_date: datetime | None
     done: bool | None
     expired: bool | None
+    owner_uid: UserUID | None
 
     class Settings:
         """Config for TaskMongoDb."""
@@ -22,7 +23,7 @@ class TaskMongoDb(Document):
         name = "tasks"
 
     def to_entity(self) -> Task:
-        """Convert TaskMongoDb to Task from domain."""
+        """Convert TaskMongoDb to Task from database."""
         return Task(
             uid=TaskUID(self.id),
             **self.dict(exclude={"id"}),  # Возможно тут надо написать {"_id"}
