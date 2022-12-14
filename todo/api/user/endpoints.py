@@ -2,7 +2,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, FastAPI, status
 from fastapi.responses import JSONResponse
 
-from todo.api.auth.dependencies import get_current_user
+from todo.api.auth.dependencies import decode_username_from_token
 from todo.core.user.models import User
 from todo.core.user.services import AbstractUserService
 from todo.dependencies import Container
@@ -27,7 +27,7 @@ def bootstrap(app: FastAPI) -> FastAPI:
 )
 @inject
 async def read_users_me(
-    current_username: str = Depends(get_current_user),  # noqa
+    current_username: str = Depends(decode_username_from_token),  # noqa
     user_service: AbstractUserService = Depends(  # noqa
         Provide[Container.user_service]
     ),

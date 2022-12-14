@@ -14,7 +14,7 @@ class AuthScheme:
 
 
 @inject
-async def get_current_user(
+async def decode_username_from_token(
     token: str = Depends(AuthScheme.oauth2_scheme),  # noqa
     auth_settings: AuthSettings = Depends(Provide[Container.auth_settings]),  # noqa
 ):
