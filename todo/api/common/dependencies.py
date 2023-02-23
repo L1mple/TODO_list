@@ -20,6 +20,7 @@ def add_celery(
     app: FastAPI,
     celery_settings: CelerySettings = Provide[Container.celery_settings],
 ) -> FastAPI:
+    """Add celery instance to FastAPI app."""
     app.celery_app = create_celery(
         app_name=celery_settings.NAME,
         broker_url=celery_settings.connection_str(),
