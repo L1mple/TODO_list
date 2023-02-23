@@ -8,6 +8,7 @@ from todo.core.task.repository import AbstractTaskRepository
 from todo.core.task.services import AbstractTaskService
 from todo.core.user.repository import AbstractUserRepository
 from todo.core.user.services import AbstractUserService
+from todo.service.celery.settings import CelerySettings
 from todo.service.mongo.settings import MongoSettings
 
 
@@ -17,6 +18,7 @@ class Container(containers.DeclarativeContainer):
     mongo_settings = providers.Object(MongoSettings())
     api_settings = providers.Object(ApiSettings())
     auth_settings = providers.Object(AuthSettings())
+    celery_settings = providers.Object(CelerySettings())
 
     crypt_service = providers.AbstractSingleton()
 

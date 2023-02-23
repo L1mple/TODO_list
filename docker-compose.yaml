@@ -40,3 +40,23 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT
     depends_on:
       - mongo
+      
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    restart: always
+    ports:
+        - 5672:5672
+        - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: $RABBITMQ_USER
+      RABBITMQ_DEFAULT_PASS: $RABBITMQ_PASS
+
+  flower:  
+    image: mher/flower:0.9.7
+    command: ["flower", "--broker=pyamqp://admin:pa55w0rd@rabbitmq:5672/", "--port=8888"]  
+    ports:  
+      - 8888:8888  
+    depends_on:
+      - rabbitmq
+      - celery_worker
