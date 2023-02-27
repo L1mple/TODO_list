@@ -10,7 +10,6 @@ python = "^3.10"
 fastapi = "^0.85.1"
 uvicorn = "^0.19.0"
 pydantic = {extras = ["email"], version = "^1.10.2"}
-dependency-injector = "^4.40.0"
 python-dotenv = "^0.21.0"
 motor = "^3.1.1"
 beanie = "^1.15.3"
@@ -23,6 +22,7 @@ celery = "^5.2.7"
 flower = "^1.2.0"
 pyamqp = "^0.1.0.7"
 redis = "^4.5.1"
+dependency-injector = "4.38.0"
 
 
 [tool.poetry.group.dev.dependencies]
