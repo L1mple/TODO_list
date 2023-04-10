@@ -13,7 +13,7 @@ from todo.service.mongo.settings import MongoSettings
 
 
 class Container(containers.DeclarativeContainer):
-    """DI container."""
+    """DI container 23."""
 
     mongo_settings = providers.Object(MongoSettings())
     api_settings = providers.Object(ApiSettings())
