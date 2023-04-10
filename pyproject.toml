@@ -9,13 +9,20 @@ readme = "README.md"
 python = "^3.10"
 fastapi = "^0.85.1"
 uvicorn = "^0.19.0"
-pydantic = "^1.10.2"
-dependency-injector = "^4.40.0"
+pydantic = {extras = ["email"], version = "^1.10.2"}
 python-dotenv = "^0.21.0"
 motor = "^3.1.1"
 beanie = "^1.15.3"
 toolz = "^0.12.0"
 case-converter = "^1.1.0"
+passlib = "^1.7.4"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+python-multipart = "^0.0.5"
+celery = "^5.2.7"
+flower = "^1.2.0"
+pyamqp = "^0.1.0.7"
+redis = "^4.5.1"
+dependency-injector = "4.38.0"
 
 
 [tool.poetry.group.dev.dependencies]
